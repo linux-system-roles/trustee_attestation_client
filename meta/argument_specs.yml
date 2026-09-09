@@ -1,0 +1,81 @@
+# SPDX-License-Identifier: MIT
+---
+argument_specs:
+  main:
+    short_description: The trustee_client role.
+    description: >
+      The trustee_client role deploys Trustee Guest Components for
+      confidential virtual machine deployments using Podman Quadlets.
+      The role installs Attestation Agent, Confidential Data Hub, and
+      API Server REST components, and optionally configures a secret
+      registration client and LUKS2 disk encryption.
+    options:
+      trustee_client_trustee_gc:
+        type: bool
+        default: true
+        description: >
+          Whether to deploy Trustee Guest Components using Podman
+          Quadlets. When `false`, quadlet files, configuration, and
+          the `trustee-gc` pod service are not installed. The secret
+          registration client is only deployed when this is `true`
+          and `trustee_client_secret_registration_enabled` is also
+          `true`.
+      trustee_client_kbs_url:
+        type: str
+        default: ""
+        description: >
+          URL of the Key Broker Service (KBS) used by Trustee Guest
+          Components. When non-empty, replaces the `KBS_URL`
+          placeholder in Attestation Agent and Confidential Data Hub
+          `config.toml` files under `/etc/trustee-gc/`.
+      trustee_client_kbs_cert_content:
+        type: str
+        default: ""
+        description: >
+          PEM-encoded TLS certificate for the KBS server. When
+          non-empty, replaces the `KBS_CERT` placeholder in
+          configuration files and writes the certificate to
+          `/etc/trustee-gc/server.crt`. Takes precedence over
+          `trustee_client_kbs_cert_src` when both are set.
+      trustee_client_kbs_cert_src:
+        type: str
+        default: ""
+        description: >
+          Path on the control node to a PEM certificate file for the
+          KBS server. Used when `trustee_client_kbs_cert_content` is
+          empty. The file is read with `lookup('file', ...)`.
+      trustee_client_secret_registration_enabled:
+        type: bool
+        default: false
+        description: >
+          Whether to install and configure the secret registration
+          client. Requires Trustee Guest Components
+          (`trustee_client_trustee_gc` must be `true`). When
+          enabled, the client registers with the Secret Registration
+          Server and can supply disk encryption keys.
+      trustee_client_encrypt_disk:
+        type: bool
+        default: false
+        description: >
+          Whether to locate an unpartitioned disk, create a LUKS2
+          encrypted volume, and mount it at
+          `trustee_client_encrypt_disk_mount_point`. The encryption
+          key comes from the secret registration client when
+          `trustee_client_secret_registration_enabled` is `true`,
+          otherwise from a generated key with TPM binding.
+      trustee_client_encrypt_disk_mount_point:
+        type: path
+        default: /mnt/encrypted-disk
+        description: >
+          Filesystem path where the encrypted disk mapper device
+          `trustee_client_encrypted_disk_0` is mounted when
+          `trustee_client_encrypt_disk` is `true`. The directory
+          is created if missing.
+      trustee_client_secure_logging:
+        type: bool
+        default: true
+        description: >
+          Whether to suppress potentially sensitive output from tasks
+          that handle credentials and secrets by setting `no_log` on
+          those tasks. Only intended to be disabled when debugging
+          credential or secret handling issues.

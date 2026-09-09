@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Assert secret_registration_enabled requires trustee_gc
+  ansible.builtin.assert:
+    that:
+      - trustee_client_trustee_gc | bool
+    fail_msg: >-
+      trustee_client_secret_registration_enabled requires
+      trustee_client_trustee_gc to be true
+  when: trustee_client_secret_registration_enabled | bool

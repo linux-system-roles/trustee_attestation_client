@@ -3,6 +3,9 @@
 - name: Set platform/version specific variables
   include_tasks: tasks/set_vars.yml
 
+- name: Validate role parameters
+  ansible.builtin.include_tasks: assert_role_vars.yml
+
 - name: Deploy Trustee Guest Components using Podman Quadlets
   include_tasks: trustee_quadlet.yml
   when: trustee_client_trustee_gc | bool
