@@ -31,7 +31,7 @@ Changelog
 
 ### New Features
 
-- feat: Add trustee-gc quadlet and disk encyption option (#9)
+- feat: Add trustee-gc quadlet and disk encryption option (#9)
 - feat: fix role for AWS (#10)
 - feat(secret_registration_client): add secret registration client service (#16)
 - feat: change name to trustee_client, add systemd-cryptenroll and allow kbs_cert by file path (#18)
