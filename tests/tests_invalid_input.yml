@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: MIT
 ---
-# Verify meta/argument_specs.yml rejects bad parameters. Each block runs
-# the role expecting failure; rescue records that outcome.
+# Verify meta/argument_specs.yml and tasks/assert_role_vars.yml reject bad
+# parameters. Each block runs the role expecting failure; rescue records
+# that outcome.
 - name: Verify invalid parameters are rejected
   hosts: all
   tasks:
@@ -41,75 +42,6 @@
                   meta/argument_specs should reject
                   trustee_client_trustee_gc values that are not
                   booleans
-
-            # --- Test: non-string trustee_client_kbs_url ---
-            - name: Argument specs reject non-string trustee_client_kbs_url
-              block:
-                - name: Run role with non-string trustee_client_kbs_url
-                  ansible.builtin.include_tasks:
-                    file: tasks/run_role_with_clear_facts.yml
-                  vars:
-                    trustee_client_kbs_url: 123
-              rescue:
-                - name: Mark invalid trustee_client_kbs_url type rejected
-                  ansible.builtin.set_fact:
-                    __invalid_input_kbs_url_type_failed: true
-
-            - name: Assert invalid trustee_client_kbs_url type was rejected
-              ansible.builtin.assert:
-                that:
-                  - __invalid_input_kbs_url_type_failed | default(false)
-                fail_msg: >-
-                  meta/argument_specs should reject
-                  trustee_client_kbs_url values that are not strings
-
-            # --- Test: non-string trustee_client_kbs_cert_content ---
-            - name: Argument specs reject non-string kbs_cert_content
-              block:
-                - name: Run role with non-string kbs_cert_content
-                  ansible.builtin.include_tasks:
-                    file: tasks/run_role_with_clear_facts.yml
-                  vars:
-                    trustee_client_kbs_cert_content: 123
-              rescue:
-                - name: Mark invalid kbs_cert_content type rejected
-                  ansible.builtin.set_fact:
-                    __invalid_input_kbs_cert_content_type_failed: true
-
-            - name: Assert invalid kbs_cert_content type was rejected
-              ansible.builtin.assert:
-                that:
-                  - >-
-                    __invalid_input_kbs_cert_content_type_failed
-                    | default(false)
-                fail_msg: >-
-                  meta/argument_specs should reject
-                  trustee_client_kbs_cert_content values that are
-                  not strings
-
-            # --- Test: non-string trustee_client_kbs_cert_src ---
-            - name: Argument specs reject non-string kbs_cert_src
-              block:
-                - name: Run role with non-string kbs_cert_src
-                  ansible.builtin.include_tasks:
-                    file: tasks/run_role_with_clear_facts.yml
-                  vars:
-                    trustee_client_kbs_cert_src: 123
-              rescue:
-                - name: Mark invalid kbs_cert_src type rejected
-                  ansible.builtin.set_fact:
-                    __invalid_input_kbs_cert_src_type_failed: true
-
-            - name: Assert invalid kbs_cert_src type was rejected
-              ansible.builtin.assert:
-                that:
-                  - >-
-                    __invalid_input_kbs_cert_src_type_failed
-                    | default(false)
-                fail_msg: >-
-                  meta/argument_specs should reject
-                  trustee_client_kbs_cert_src values that are not
-                  strings
 
             # --- Test: non-boolean secret_registration_enabled ---
             - name: Argument specs reject non-boolean secret_registration_enabled
@@ -186,6 +118,74 @@
         # ====================================================
         # Section 3: assert_role_vars validation (all versions)
         # ====================================================
+
+        # --- Test: role-level string validation for trustee_client_kbs_url ---
+        - name: Role-level string validation rejects non-string kbs_url
+          block:
+            - name: Run role with non-string trustee_client_kbs_url
+              ansible.builtin.include_tasks:
+                file: tasks/run_role_with_clear_facts.yml
+              vars:
+                trustee_client_kbs_url: 123
+          rescue:
+            - name: Mark invalid trustee_client_kbs_url type rejected
+              ansible.builtin.set_fact:
+                __invalid_input_kbs_url_type_failed: true
+
+        - name: Assert role-level kbs_url string validation was enforced
+          ansible.builtin.assert:
+            that:
+              - __invalid_input_kbs_url_type_failed | default(false)
+            fail_msg: >-
+              tasks/assert_role_vars.yml should reject
+              trustee_client_kbs_url values that are not strings
+
+        # --- Test: role-level string validation for kbs_cert_content ---
+        - name: Role-level string validation rejects non-string kbs_cert_content
+          block:
+            - name: Run role with non-string kbs_cert_content
+              ansible.builtin.include_tasks:
+                file: tasks/run_role_with_clear_facts.yml
+              vars:
+                trustee_client_kbs_cert_content: 123
+          rescue:
+            - name: Mark invalid kbs_cert_content type rejected
+              ansible.builtin.set_fact:
+                __invalid_input_kbs_cert_content_type_failed: true
+
+        - name: Assert role-level kbs_cert_content string validation was enforced
+          ansible.builtin.assert:
+            that:
+              - >-
+                __invalid_input_kbs_cert_content_type_failed
+                | default(false)
+            fail_msg: >-
+              tasks/assert_role_vars.yml should reject
+              trustee_client_kbs_cert_content values that are not
+              strings
+
+        # --- Test: role-level string validation for kbs_cert_src ---
+        - name: Role-level string validation rejects non-string kbs_cert_src
+          block:
+            - name: Run role with non-string kbs_cert_src
+              ansible.builtin.include_tasks:
+                file: tasks/run_role_with_clear_facts.yml
+              vars:
+                trustee_client_kbs_cert_src: 123
+          rescue:
+            - name: Mark invalid kbs_cert_src type rejected
+              ansible.builtin.set_fact:
+                __invalid_input_kbs_cert_src_type_failed: true
+
+        - name: Assert role-level kbs_cert_src string validation was enforced
+          ansible.builtin.assert:
+            that:
+              - >-
+                __invalid_input_kbs_cert_src_type_failed
+                | default(false)
+            fail_msg: >-
+              tasks/assert_role_vars.yml should reject
+              trustee_client_kbs_cert_src values that are not strings
 
         # --- Test: secret_registration_enabled requires trustee_gc ---
         - name: Assert rejects secret_registration_enabled without trustee_gc

@@ -1,5 +1,32 @@
 # SPDX-License-Identifier: MIT
 ---
+- name: Assert trustee_client_kbs_url is a string
+  ansible.builtin.assert:
+    that:
+      - trustee_client_kbs_url is string
+    fail_msg: >-
+      trustee_client_kbs_url must be a string,
+      got {{ trustee_client_kbs_url | type_debug }}
+  when: trustee_client_kbs_url is defined
+
+- name: Assert trustee_client_kbs_cert_content is a string
+  ansible.builtin.assert:
+    that:
+      - trustee_client_kbs_cert_content is string
+    fail_msg: >-
+      trustee_client_kbs_cert_content must be a string,
+      got {{ trustee_client_kbs_cert_content | type_debug }}
+  when: trustee_client_kbs_cert_content is defined
+
+- name: Assert trustee_client_kbs_cert_src is a string
+  ansible.builtin.assert:
+    that:
+      - trustee_client_kbs_cert_src is string
+    fail_msg: >-
+      trustee_client_kbs_cert_src must be a string,
+      got {{ trustee_client_kbs_cert_src | type_debug }}
+  when: trustee_client_kbs_cert_src is defined
+
 - name: Assert secret_registration_enabled requires trustee_gc
   ansible.builtin.assert:
     that:
